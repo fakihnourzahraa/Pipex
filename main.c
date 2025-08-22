@@ -35,13 +35,25 @@ char	*find_path(char **envp)
 	return (ans);
 }
 //create a function to free stuff here
-int	src_p(char **argv, char *dirs)
+char	*get_path(char **dirs, char *name)
 {
+	char	*path;
 
+	
+	while(*dirs)
+	{
+		path = ft_strjoin(*dirs, "/");
+		path = ft_strjoin(path, name);
+		if (access(path, R_OK) != -1)
+			return (path);
+		dirs++;
+	}
+	return (NULL);
 }
+
 int	pipex(char **argv, char **e)
 {
-	char	*dirs;
+	char	**dirs;
 	char	**in;
 	char	**cmd1;
 	char	*cmd2;
@@ -51,7 +63,7 @@ int	pipex(char **argv, char **e)
 		src_p(in[3], e)))
 		return (0);
 	dirs = ft_split(find_path(e), ':');
-
+	get_path(dirs, in[0]);
 	free(dirs);
 	free_d(in);
 
@@ -64,7 +76,6 @@ int main(int argv, char **argc, char **envp)
 {
 	if (argv != 4)
 		return (0);
-	
 	pipex(argc, envp);
 	//freeing
 

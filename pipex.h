@@ -14,9 +14,11 @@
 # define PIPEX_H
 
 # include <stdio.h>
+# include <unistd.h>
 
 
 char	**ft_split(const char *str, char c);
 size_t	ft_strlen(const char *str);
 char	*ft_substr(char const *s, unsigned int start, size_t len)
+
 #endif

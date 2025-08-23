@@ -1,6 +1,23 @@
 
 #include "pipex.h"
+#include <string.h>
+char	*ft_strdup(const char *src)
+{
+	int		i;
+	char	*new;
 
+	i = 0;
+	new = (char *)malloc(sizeof(char) * ft_strlen(src) + 1);
+	if (!new)
+		return (0);
+	while (src[i])
+	{
+		new[i] = src[i];
+		i++;
+	}
+	new[i] = '\0';
+	return (new);
+}
 void	free_d(char	**a)
 {
 	int i;
@@ -16,11 +33,9 @@ void	free_d(char	**a)
 char	*find_path(char **envp)
 {
 	int		i;
-	int		j;
 	char	*ans;
 
 	i = 0;
-	j = 0;
 	ans = NULL;
 	while (envp[i])
 	{
@@ -28,27 +43,65 @@ char	*find_path(char **envp)
 		{
 			ans = ft_substr(envp[i], 5, (ft_strlen(envp[i]) - 5));
 		}
-		j++;
+		i++;
 	}
 	return (ans);
 }
 //create a function to free stuff here
-char	*get_path(t_pipe *a, char *name)
-{
-	char	**dirs;
-	char	*path;
+// char	*get_path(t_pipe *a, char *name)
+// {
+// 	char	**dirs;
+// 	char	*path;
 
-	name = ft_split(name, ' ')[0];
-	dirs = a->dirs;
-	while(*dirs)
-	{
-		path = ft_strjoin(*dirs, "/");
-		path = ft_strjoin(path, name);
-		if (access(path, R_OK) != -1)
-			return (path);
-		dirs++;
-	}
-	return (NULL);
+// 	name = ft_split(name, ' ')[0];
+// 	dirs = a->dirs;
+// 	while(*dirs)
+// 	{
+// 		path = ft_strjoin(*dirs, "/");
+// 		path = ft_strjoin(path, name);
+// 		if (access(path, R_OK) != -1)
+// 			return (path);
+// 		dirs++;
+// 	}
+// 	return (NULL);
+// }
+
+char *get_path(t_pipe *a, char *name)
+{
+    char **dirs;
+    char *path;
+    char **cmd_args;
+
+    // ADD NULL CHECK
+    if (!name)
+        return (NULL);
+
+    cmd_args = ft_split(name, ' ');
+    if (!cmd_args || !cmd_args[0])
+    {
+        if (cmd_args)
+            free_d(cmd_args);  // Free the array if allocation succeeded but empty
+        return (NULL);
+    }
+
+    name = cmd_args[0];  // Use first part as command name
+    dirs = a->dirs;
+    
+    while (*dirs)
+    {
+        path = ft_strjoin(*dirs, "/");
+        path = ft_strjoin(path, name);  // Memory leak here - fix below
+        if (access(path, R_OK) != -1)
+        {
+            free_d(cmd_args);  // Free the split array
+            return (path);
+        }
+        free(path);  // Free unsuccessful path
+        dirs++;
+    }
+    
+    free_d(cmd_args);  // Free the split array
+    return (NULL);
 }
 void	cleanup(t_pipe *a, char *p, char **d)
 {
@@ -57,8 +110,6 @@ void	cleanup(t_pipe *a, char *p, char **d)
 	i = 0;
 	free(a->cmd1_p);
 	free(a->cmd2_p);
-	free(a->in);
-	free(a->out);
 	while(a->dirs[i])
 	{
 		free(a->dirs[i]);
@@ -76,7 +127,7 @@ void	cleanup(t_pipe *a, char *p, char **d)
 	}
 	free(a);
 }
-int	child1(t_pipe *a)
+int	child1(t_pipe *a, char **argv)
 {
 	char 	*p;
 	char	**d;
@@ -84,46 +135,50 @@ int	child1(t_pipe *a)
 	if (a->pid1 == 0)
 	{
 		if (dup2(a->fd1, 0) == -1)
-			return (cleanup(a, NULL, NULL), 0);
-		close (a->fd1);
-		if (dup2(a->pfd[0], 1) == -1)
-			return(cleanup(a, NULL, NULL), exit(126), 0);
+			return (exit(1), 0);
+		if (dup2(a->pfd[1], 1) == -1)
+			return(exit(1), 0);
 		close(a->pfd[0]);
-		p = get_path(a, a->cmd1_p);
+		close (a->fd1);
+		close (a->fd2);
+		close(a->pfd[1]);
+		p = get_path(a, ft_strdup(argv[2]));
 		if (!p)
-			return(cleanup(a, NULL, NULL), exit(1), 0);
+			return(exit(1), 0);
 		d = ft_split(a->cmd1_p, ' ');
 		if (execve(p, d, a->e) == -1)
-			return(cleanup(a, p, d), exit(126), 0);
+			return(exit(126), 0);
+		free(p);
 	}
-	free(p);
 	return (1);
 }
-int	child2(t_pipe *a)
+int	child2(t_pipe *a, char **argv)
 {
 	char 	*p;
 	char	**d;
 
-	if (a->pid1 == 0)
+	if (a->pid2 == 0)
 	{
 		if (dup2(a->pfd[0], 0) == -1)
-			return (cleanup(a, NULL, NULL), 0);
-		close(a->pfd[0]);
+			return (0);
 		if (dup2(a->fd2, 1) == -1)
-			return(cleanup(a, NULL, NULL), exit(126), 0);
+			return(exit(126), 0);
+		close(a->pfd[0]);
+		close (a->fd1);
 		close (a->fd2);
-		p = get_path(a, a->cmd2_p);
+		close(a->pfd[1]);
+		p = get_path(a, ft_strdup(argv[3]));
 		if (!p)
-			return(cleanup(a, NULL, NULL), exit(1), 0);
+			return( exit(1), 0);
 		d = ft_split(a->cmd2_p, ' ');
 		if (execve(p, d, a->e) == -1)
-			return(cleanup(a, p, d), exit(126), 0);
+			return(exit(126), 0);
+		free(p);
 	}
-	free(p);
 	return (1);
 }
 
-void	execute(t_pipe *a)
+void	execute(t_pipe *a, char **argv)
 {
 	int *s;
 
@@ -135,7 +190,7 @@ void	execute(t_pipe *a)
 		cleanup(a, NULL, NULL);
 		exit(1);
 	}
-	child1(a);
+	child1(a, argv);
 	if (a->pid1 > 0)
 		wait(s);
 	a->pid2 = fork();
@@ -144,7 +199,7 @@ void	execute(t_pipe *a)
 		cleanup(a, NULL, NULL);
 		exit(1);
 	}
-	child2(a);
+	child2(a, argv);
 	if (a->pid2 > 0)
 		wait(s);
 } 
@@ -170,9 +225,9 @@ int main(int argc, char **argv, char **envp)
 	if (!a)
 		return (0);
 	intialize_pipe(a, argv, envp);
-	execute(a);
-	close(a->pfd[1]);
-	close(a->pfd[1]);
+	execute(a, argv);
+	// close(a->pfd[1]);
+	// close(a->pfd[0]);
 	cleanup(a, NULL, NULL);
     return (0);
 }

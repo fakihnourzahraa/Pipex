@@ -65,44 +65,65 @@ char	*find_path(char **envp)
 // 	}
 // 	return (NULL);
 // }
-
 char *get_path(t_pipe *a, char *name)
 {
     char **dirs;
     char *path;
+    char *temp_path;
     char **cmd_args;
+    char *cmd_name;
 
-    // ADD NULL CHECK
     if (!name)
         return (NULL);
 
+    // Split the command to get just the command name (first part)
     cmd_args = ft_split(name, ' ');
     if (!cmd_args || !cmd_args[0])
     {
         if (cmd_args)
-            free_d(cmd_args);  // Free the array if allocation succeeded but empty
+            free_d(cmd_args);
         return (NULL);
     }
 
-    name = cmd_args[0];  // Use first part as command name
+    cmd_name = cmd_args[0];  // Use first part as command name
     dirs = a->dirs;
+    
+    if (!dirs)
+    {
+        free_d(cmd_args);
+        return (NULL);
+    }
     
     while (*dirs)
     {
-        path = ft_strjoin(*dirs, "/");
-        path = ft_strjoin(path, name);  // Memory leak here - fix below
-        if (access(path, R_OK) != -1)
+        temp_path = ft_strjoin(*dirs, "/");
+        if (!temp_path)
         {
-            free_d(cmd_args);  // Free the split array
+            free_d(cmd_args);
+            return (NULL);
+        }
+        path = ft_strjoin(temp_path, cmd_name);
+        free(temp_path);
+        
+        if (!path)
+        {
+            free_d(cmd_args);
+            return (NULL);
+        }
+        
+        if (access(path, X_OK) == 0)
+        {
+            free_d(cmd_args);
             return (path);
         }
-        free(path);  // Free unsuccessful path
+        free(path);
         dirs++;
     }
     
-    free_d(cmd_args);  // Free the split array
+    free_d(cmd_args);
     return (NULL);
 }
+
 void	cleanup(t_pipe *a, char *p, char **d)
 {
 	int	i;
@@ -127,7 +148,7 @@ void	cleanup(t_pipe *a, char *p, char **d)
 	}
 	free(a);
 }
-int	child1(t_pipe *a, char **argv)
+void	child1(t_pipe *a, char **argv)
 {
 	char 	*p;
 	char	**d;
@@ -135,24 +156,28 @@ int	child1(t_pipe *a, char **argv)
 	if (a->pid1 == 0)
 	{
 		if (dup2(a->fd1, 0) == -1)
-			return (exit(1), 0);
+			exit(1);
 		if (dup2(a->pfd[1], 1) == -1)
-			return(exit(1), 0);
+			exit(1);
 		close(a->pfd[0]);
 		close (a->fd1);
 		close (a->fd2);
 		close(a->pfd[1]);
 		p = get_path(a, ft_strdup(argv[2]));
 		if (!p)
-			return(exit(1), 0);
+			exit(127);
 		d = ft_split(a->cmd1_p, ' ');
 		if (execve(p, d, a->e) == -1)
-			return(exit(126), 0);
+		{
+			free(p);
+			free(d);
+			exit(126);
+		}
+		free(d);
 		free(p);
 	}
-	return (1);
 }
-int	child2(t_pipe *a, char **argv)
+void	child2(t_pipe *a, char **argv)
 {
 	char 	*p;
 	char	**d;
@@ -160,22 +185,26 @@ int	child2(t_pipe *a, char **argv)
 	if (a->pid2 == 0)
 	{
 		if (dup2(a->pfd[0], 0) == -1)
-			return (0);
+			exit(1);
 		if (dup2(a->fd2, 1) == -1)
-			return(exit(126), 0);
+			exit(126);
 		close(a->pfd[0]);
 		close (a->fd1);
 		close (a->fd2);
 		close(a->pfd[1]);
 		p = get_path(a, ft_strdup(argv[3]));
 		if (!p)
-			return( exit(1), 0);
+			exit(1);
 		d = ft_split(a->cmd2_p, ' ');
 		if (execve(p, d, a->e) == -1)
-			return(exit(126), 0);
+		{
+			free(p);
+			free(d);
+			exit (126);
+		}
+		free(d);
 		free(p);
 	}
-	return (1);
 }
 
 void	execute(t_pipe *a, char **argv)

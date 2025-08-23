@@ -6,11 +6,11 @@
 /*   By: nfakih <nfakih@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/02 09:28:26 by nfakih            #+#    #+#             */
-/*   Updated: 2025/05/02 09:28:26 by nfakih           ###   ########.fr       */
+/*   Updated: 2025/08/23 20:29:40 by nfakih           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex"
+#include "pipex.h"
 
 int	wordcount(char *str, char c)
 {

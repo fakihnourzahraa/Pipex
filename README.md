@@ -5,7 +5,6 @@
     -> if (!= 5) exit
     -> 4 strings, split 2 and 3
 -> Command not found
--> Infile/outfile not found
 -> Check for permissions
 -> Create pipe
 -> Create child process/command

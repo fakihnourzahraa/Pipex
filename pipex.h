@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yitani <yitani@student.42.fr>              +#+  +:+       +#+        */
+/*   By: nfakih <nfakih@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/21 21:00:44 by marvin            #+#    #+#             */
-/*   Updated: 2025/08/23 22:32:14 by yitani           ###   ########.fr       */
+/*   Updated: 2025/08/23 22:00:11 by nfakih           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@ typedef struct s_pipe
 	pid_t	pid2;
 	int		pfd[2];
 	char	**e;
+	char	**c1;
+	char	**c2;
 	char	**dirs;
 }				t_pipe;
 
@@ -39,4 +41,5 @@ size_t	ft_strlen(const char *str);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 char	*ft_strjoin(char const *s1, char const *s2);
 char	*ft_strstr(char *str, char *to_find);
+char	*ft_strdup(const char *s);
 #endif

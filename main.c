@@ -6,7 +6,7 @@
 /*   By: yitani <yitani@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 15:54:11 by nfakih            #+#    #+#             */
-/*   Updated: 2025/08/27 20:52:49 by yitani           ###   ########.fr       */
+/*   Updated: 2025/08/27 21:33:31 by yitani           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,16 @@ void    execute(t_pipe *a, char **e)
     int status1, status2;
     int final_exit = 0;
 
-    pipe(a->pfd);
+    if (pipe(a->pfd) == -1)
+	{
+		cleanup(a, NULL, NULL);
+		exit(1);
+	}
     a->pid1 = fork();
     if (a->pid1 == -1)
     {
+		close(a->pfd[0]);
+        close(a->pfd[1]);
         cleanup(a, NULL, NULL);
         exit(1);
     }
@@ -28,6 +34,8 @@ void    execute(t_pipe *a, char **e)
     a->pid2 = fork();
     if (a->pid2 == -1)
     {
+		close(a->pfd[0]);
+        close(a->pfd[1]);
         cleanup(a, NULL, NULL);
         exit(1);
     }
@@ -83,8 +91,6 @@ int main(int argc, char **argv, char **envp)
 	execute(a, envp);
 	// close(a->pfd[0]);
 	// close(a->pfd[1]);
-
-	
 	cleanup(a, NULL, NULL);
     return (0);
 }

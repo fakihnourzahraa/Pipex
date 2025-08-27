@@ -6,7 +6,7 @@
 /*   By: yitani <yitani@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 15:54:24 by nfakih            #+#    #+#             */
-/*   Updated: 2025/08/27 20:58:06 by yitani           ###   ########.fr       */
+/*   Updated: 2025/08/27 21:40:49 by yitani           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,6 @@ int	child1(t_pipe *a, char **e)
 			cleanup(a, NULL, NULL);
 			exit(1);
 		}
-			
 		close (a->fd1);
 		if (dup2(a->pfd[1], 1) == -1)
 			return(0);
@@ -144,7 +143,7 @@ int	child1(t_pipe *a, char **e)
 		// get_path(a, a->cmd1_p, 1);
 		d = ft_split(a->c1, ' ');
 		if (execve(a->cmd1_p, d, e) == -1)
-			return(cleanup(a, NULL, d), exit(126), 0);
+			return(cleanup(a, NULL, d), exit(127), 0);
 	}
 	return (1);
 }
@@ -159,12 +158,12 @@ int	child2(t_pipe *a, char **e)
 		close(a->pfd[0]);
 		close(a->pfd[1]);
 		if (dup2(a->fd2, 1) == -1)
-			return(exit(126), 0);
+			return(exit(1), 0);
 		close (a->fd2);
 		// get_path(a, a->cmd2_p, 2);
 		d = ft_split(a->c2, ' ');
 		if (execve(a->cmd2_p, d, e) == -1)
-			return(cleanup(a, NULL, d), exit(126), 0);
+			return(cleanup(a, NULL, d), exit(127), 0);
 	}
 	return (1);
 }

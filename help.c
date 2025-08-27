@@ -6,7 +6,7 @@
 /*   By: yitani <yitani@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 15:54:24 by nfakih            #+#    #+#             */
-/*   Updated: 2025/08/27 20:52:24 by yitani           ###   ########.fr       */
+/*   Updated: 2025/08/27 20:58:06 by yitani           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,11 @@ int	child1(t_pipe *a, char **e)
 	if (a->pid1 == 0)
 	{
 		if (dup2(a->fd1, 0) == -1)
+		{
+			cleanup(a, NULL, NULL);
 			exit(1);
+		}
+			
 		close (a->fd1);
 		if (dup2(a->pfd[1], 1) == -1)
 			return(0);
@@ -151,7 +155,7 @@ int	child2(t_pipe *a, char **e)
 	if (a->pid2 == 0)
 	{
 		if (dup2(a->pfd[0], 0) == -1)
-			exit(1);
+			return(cleanup(a, NULL, NULL), exit(1), 1);
 		close(a->pfd[0]);
 		close(a->pfd[1]);
 		if (dup2(a->fd2, 1) == -1)

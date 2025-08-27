@@ -1,6 +1,6 @@
 NAME    = pipex
 
-SRC = ft_split.c libft.c ft_strjoin.c libft.c ft_strdup.c main.c help.c
+SRC = ft_split.c ft_strjoin.c libft.c ft_strdup.c main.c help.c
 
 OBJ     = $(SRC:.c=.o)
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nfakih <nfakih@student.42.fr>              +#+  +:+       +#+        */
+/*   By: yitani <yitani@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 15:54:11 by nfakih            #+#    #+#             */
-/*   Updated: 2025/08/27 19:49:07 by nfakih           ###   ########.fr       */
+/*   Updated: 2025/08/27 19:57:48 by yitani           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,6 @@ void	execute(t_pipe *a, char **e)
 		exit(1);
 	}
 	child1(a, e);
-	if (a->pid1 > 0)
-		wait(s);
 	a->pid2 = fork();
 	if (a->pid2 == -1)
 	{
@@ -34,8 +32,10 @@ void	execute(t_pipe *a, char **e)
 		exit(1);
 	}
 	child2(a, e);
-	if (a->pid2 > 0)
-		wait(s);
+	close(a->pfd[0]);
+	close(a->pfd[1]);
+	waitpid(a->pid1, NULL, 0);
+	waitpid(a->pid2, NULL, 0);
 }
 //pids: 0 is child positive is parent -1 is error
 void	intialize_pipe(t_pipe *a, char **argv, char **e)

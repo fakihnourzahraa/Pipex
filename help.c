@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   help.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nfakih <nfakih@student.42.fr>              +#+  +:+       +#+        */
+/*   By: yitani <yitani@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 15:54:24 by nfakih            #+#    #+#             */
-/*   Updated: 2025/08/27 19:48:40 by nfakih           ###   ########.fr       */
+/*   Updated: 2025/08/27 20:03:09 by yitani           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,9 +82,9 @@ void	get_path(t_pipe *a, char *name, int c)
 		if (access(path, R_OK) != -1)
 		{
 			if (c == 1)
-				a->cmd1_p = ft_strdup(a->dirs[i]);
+				a->cmd1_p = ft_strdup(path);
 			else
-				a->cmd2_p = ft_strdup(a->dirs[i]);
+				a->cmd2_p = ft_strdup(path);
 			free(path);
 			break ;
 		}
@@ -129,13 +129,14 @@ int	child1(t_pipe *a, char **e)
 	if (a->pid1 == 0)
 	{
 		if (dup2(a->fd1, 0) == -1)
-			return (0);
+			exit(1);
 		close (a->fd1);
 		if (dup2(a->pfd[1], 1) == -1)
-			return(exit(126), 0);
+			return(0);
 		close(a->pfd[1]);
-		get_path(a, a->cmd1_p, 1);
-		d = ft_split(a->cmd1_p, ' ');
+		close(a->pfd[0]);
+		// get_path(a, a->cmd1_p, 1);
+		d = ft_split(a->c1, ' ');
 		if (execve(a->cmd1_p, d, e) == -1)
 			return(cleanup(a, NULL, d), exit(126), 0);
 	}
@@ -148,13 +149,14 @@ int	child2(t_pipe *a, char **e)
 	if (a->pid2 == 0)
 	{
 		if (dup2(a->pfd[0], 0) == -1)
-			return (0);
+			exit(1);
 		close(a->pfd[0]);
+		close(a->pfd[1]);
 		if (dup2(a->fd2, 1) == -1)
 			return(exit(126), 0);
 		close (a->fd2);
-		get_path(a, a->cmd2_p, 2);
-		d = ft_split(a->cmd2_p, ' ');
+		// get_path(a, a->cmd2_p, 2);
+		d = ft_split(a->c2, ' ');
 		if (execve(a->cmd2_p, d, e) == -1)
 			return(cleanup(a, NULL, d), exit(126), 0);
 	}

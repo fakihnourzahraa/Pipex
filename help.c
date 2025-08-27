@@ -6,7 +6,7 @@
 /*   By: yitani <yitani@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 15:54:24 by nfakih            #+#    #+#             */
-/*   Updated: 2025/08/27 20:03:09 by yitani           ###   ########.fr       */
+/*   Updated: 2025/08/27 20:52:24 by yitani           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ void	free_d(char	**a)
 	}
 	free(a);
 }
+
 char	*find_path(char **envp)
 {
 	int		i;
@@ -42,6 +43,7 @@ char	*find_path(char **envp)
 	}
 	return (ans);
 }
+
 void	free_twod(char **g)
 {
 	int	i;

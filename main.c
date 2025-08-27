@@ -6,37 +6,46 @@
 /*   By: yitani <yitani@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 15:54:11 by nfakih            #+#    #+#             */
-/*   Updated: 2025/08/27 19:57:48 by yitani           ###   ########.fr       */
+/*   Updated: 2025/08/27 20:52:49 by yitani           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-void	execute(t_pipe *a, char **e)
+void    execute(t_pipe *a, char **e)
 {
-	int *s;
+    int status1, status2;
+    int final_exit = 0;
 
-	s = NULL;
-	pipe(a->pfd);
-	a->pid1 = fork();
-	if (a->pid1 == -1)
-	{
-		cleanup(a, NULL, NULL);
-		exit(1);
-	}
-	child1(a, e);
-	a->pid2 = fork();
-	if (a->pid2 == -1)
-	{
-		cleanup(a, NULL, NULL);
-		exit(1);
-	}
-	child2(a, e);
-	close(a->pfd[0]);
-	close(a->pfd[1]);
-	waitpid(a->pid1, NULL, 0);
-	waitpid(a->pid2, NULL, 0);
+    pipe(a->pfd);
+    a->pid1 = fork();
+    if (a->pid1 == -1)
+    {
+        cleanup(a, NULL, NULL);
+        exit(1);
+    }
+    child1(a, e);
+    a->pid2 = fork();
+    if (a->pid2 == -1)
+    {
+        cleanup(a, NULL, NULL);
+        exit(1);
+    }
+    child2(a, e);
+    close(a->pfd[0]);
+    close(a->pfd[1]);
+    waitpid(a->pid1, &status1, 0);
+    waitpid(a->pid2, &status2, 0);
+
+    if (WIFEXITED(status2))
+        final_exit = WEXITSTATUS(status2);
+    else if (WIFSIGNALED(status2))
+        final_exit = 128 + WTERMSIG(status2);
+
+    cleanup(a, NULL, NULL);
+    exit(final_exit);
 }
+
 //pids: 0 is child positive is parent -1 is error
 void	intialize_pipe(t_pipe *a, char **argv, char **e)
 {

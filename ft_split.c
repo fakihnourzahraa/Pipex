@@ -6,7 +6,7 @@
 /*   By: nfakih <nfakih@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/02 09:28:26 by nfakih            #+#    #+#             */
-/*   Updated: 2025/08/23 20:29:40 by nfakih           ###   ########.fr       */
+/*   Updated: 2025/08/27 19:38:49 by nfakih           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	wordcount(char *str, char c)
 
 	i = 0;
 	words = 0;
-	while (str[i])
+	while (str && str[i])
 	{
 		if (str[i] != c)
 		{
@@ -96,6 +96,8 @@ char	**ft_split(const char *str, char c)
 	char	*s;
 
 	s = (char *)str;
+	if (!str)
+		return (NULL);
 	result = (char **)malloc(sizeof(char *) * (wordcount(s, c) + 1));
 	if (!result)
 		return (NULL);

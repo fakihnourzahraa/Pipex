@@ -6,7 +6,7 @@
 /*   By: nfakih <nfakih@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 18:19:21 by nfakih            #+#    #+#             */
-/*   Updated: 2025/08/23 20:28:04 by nfakih           ###   ########.fr       */
+/*   Updated: 2025/08/27 19:37:29 by nfakih           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	int		i;
 	int		j;
 
+	if (!s1 || !s2)
+		return (NULL);
 	i = 0;
 	j = 0;
 	a = (char *)s1;

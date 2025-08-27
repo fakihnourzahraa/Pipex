@@ -1,11 +1,11 @@
 NAME    = pipex
 
-SRC = ft_split.c libft.c ft_strjoin.c libft.c ft_strdup.c main.c 
+SRC = ft_split.c libft.c ft_strjoin.c libft.c ft_strdup.c main.c help.c
 
 OBJ     = $(SRC:.c=.o)
 
 CC      = cc
-CFLAGS  = -Wall -Wextra -Werror -g
+CFLAGS  =  -g
 
 all: $(NAME)
 

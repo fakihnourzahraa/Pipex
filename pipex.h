@@ -6,7 +6,7 @@
 /*   By: nfakih <nfakih@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/21 21:00:44 by marvin            #+#    #+#             */
-/*   Updated: 2025/08/23 22:00:11 by nfakih           ###   ########.fr       */
+/*   Updated: 2025/08/27 18:20:52 by nfakih           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,8 @@ typedef struct s_pipe
 	pid_t	pid2;
 	int		pfd[2];
 	char	**e;
-	char	**c1;
-	char	**c2;
+	char	*c1;
+	char	*c2;
 	char	**dirs;
 }				t_pipe;
 
@@ -42,4 +42,14 @@ char	*ft_substr(char const *s, unsigned int start, size_t len);
 char	*ft_strjoin(char const *s1, char const *s2);
 char	*ft_strstr(char *str, char *to_find);
 char	*ft_strdup(const char *s);
+int	ft_strncmp(const char *s1, const char *s2, size_t n);
+
+void	free_d(char	**a);
+char	*find_path(char **envp);
+void	free_twod(char **g);
+void	get_path(t_pipe *a, char *name, int c);
+
+void	cleanup(t_pipe *a, char *p, char **d);
+int	child1(t_pipe *a, char **e);
+int	child2(t_pipe *a, char **e);
 #endif

@@ -6,55 +6,41 @@
 /*   By: yitani <yitani@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 15:54:11 by nfakih            #+#    #+#             */
-/*   Updated: 2025/08/27 21:33:31 by yitani           ###   ########.fr       */
+/*   Updated: 2025/08/27 22:25:29 by yitani           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-void    execute(t_pipe *a, char **e)
+void	execute(t_pipe *a, char **e)
 {
-    int status1, status2;
-    int final_exit = 0;
+	int	status[2];
+	int	final_exit;
 
-    if (pipe(a->pfd) == -1)
-	{
-		cleanup(a, NULL, NULL);
-		exit(1);
-	}
-    a->pid1 = fork();
-    if (a->pid1 == -1)
-    {
-		close(a->pfd[0]);
-        close(a->pfd[1]);
-        cleanup(a, NULL, NULL);
-        exit(1);
-    }
-    child1(a, e);
-    a->pid2 = fork();
-    if (a->pid2 == -1)
-    {
-		close(a->pfd[0]);
-        close(a->pfd[1]);
-        cleanup(a, NULL, NULL);
-        exit(1);
-    }
-    child2(a, e);
-    close(a->pfd[0]);
-    close(a->pfd[1]);
-    waitpid(a->pid1, &status1, 0);
-    waitpid(a->pid2, &status2, 0);
-
-    if (WIFEXITED(status2))
-        final_exit = WEXITSTATUS(status2);
-    else if (WIFSIGNALED(status2))
-        final_exit = 128 + WTERMSIG(status2);
-
-    cleanup(a, NULL, NULL);
-    exit(final_exit);
+	final_exit = 0;
+	if (pipe(a->pfd) == -1)
+		return (cleanup(a, NULL, NULL), exit(1));
+	a->pid1 = fork();
+	if (a->pid1 == -1)
+		return (close(a->pfd[0]), close(a->pfd[1]), cleanup(a, NULL, NULL),
+			exit(1));
+	child1(a, e);
+	a->pid2 = fork();
+	if (a->pid2 == -1)
+		return (close(a->pfd[0]), close(a->pfd[1]), cleanup(a, NULL, NULL),
+			exit(1));
+	child2(a, e);
+	close(a->pfd[0]);
+	close(a->pfd[1]);
+	waitpid(a->pid1, &status[0], 0);
+	waitpid(a->pid2, &status[1], 0);
+	if (WIFEXITED(status[1]))
+		final_exit = WEXITSTATUS(status[1]);
+	else if (WIFSIGNALED(status[1]))
+		final_exit = 128 + WTERMSIG(status[1]);
+	return (cleanup(a, NULL, NULL), exit(final_exit));
 }
 
-//pids: 0 is child positive is parent -1 is error
 void	intialize_pipe(t_pipe *a, char **argv, char **e)
 {
 	char	*m;
@@ -71,15 +57,9 @@ void	intialize_pipe(t_pipe *a, char **argv, char **e)
 	a->fd1 = open(a->in, O_RDONLY);
 	a->fd2 = open(a->out, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 }
-int main(int argc, char **argv, char **envp)
-{
-	t_pipe	*a;
 
-	if (argc != 5)
-		exit(2);
-	a = malloc(sizeof(t_pipe));
-	if (!a)
-		return (0);
+void	intial(t_pipe *a)
+{
 	a->dirs = NULL;
 	a->cmd1_p = NULL;
 	a->cmd2_p = NULL;
@@ -87,10 +67,22 @@ int main(int argc, char **argv, char **envp)
 	a->out = NULL;
 	a->c1 = NULL;
 	a->c2 = NULL;
+}
+
+int	main(int argc, char **argv, char **envp)
+{
+	t_pipe	*a;
+
+	if (argc != 5)
+		exit(2);
+	if (!argv[1] || !argv[2] || !argv[3] || !argv[4] || !ft_strncmp(argv[2], "", ft_strlen(argv[2])) || !ft_strncmp(argv[3], "", ft_strlen(argv[3])) || !ft_strncmp(argv[1], "", ft_strlen(argv[1])) || !ft_strncmp(argv[4], "", ft_strlen(argv[4])))
+		exit(1);
+	a = malloc(sizeof(t_pipe));
+	if (!a)
+		return (0);
+	intial(a);
 	intialize_pipe(a, argv, envp);
 	execute(a, envp);
-	// close(a->pfd[0]);
-	// close(a->pfd[1]);
 	cleanup(a, NULL, NULL);
-    return (0);
+	return (0);
 }

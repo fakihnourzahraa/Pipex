@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   libft.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yitani <yitani@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/27 22:13:06 by yitani            #+#    #+#             */
+/*   Updated: 2025/08/27 22:13:20 by yitani           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "pipex.h"
 
@@ -43,6 +54,7 @@ char	*ft_strstr(char *str, char *to_find)
 	}
 	return (0);
 }
+
 static size_t	getalloc(unsigned int start, char const *s, int *b, size_t len)
 {
 	size_t	alloc;
@@ -84,6 +96,7 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	a[n] = '\0';
 	return (a);
 }
+
 size_t	ft_strlen(const char *str)
 {
 	size_t		a;

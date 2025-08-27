@@ -5,7 +5,7 @@ SRC = ft_split.c ft_strjoin.c libft.c ft_strdup.c main.c help.c
 OBJ     = $(SRC:.c=.o)
 
 CC      = cc
-CFLAGS  =  -g
+CFLAGS  =  -Wall -Werror -Wextra -g
 
 all: $(NAME)
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yitani <yitani@student.42.fr>              +#+  +:+       +#+        */
+/*   By: nfakih <nfakih@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/21 21:00:44 by marvin            #+#    #+#             */
-/*   Updated: 2025/08/27 22:14:03 by yitani           ###   ########.fr       */
+/*   Created: 2025/08/27 22:31:57 by nfakih            #+#    #+#             */
+/*   Updated: 2025/08/27 22:31:59 by nfakih           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,10 @@ void	free_d(char	**a);
 char	*find_path(char **envp);
 void	free_twod(char **g);
 void	get_path(t_pipe *a, char *name, int c);
+
+void	cleanup(t_pipe *a, char *p, char **d);
+int		child1(t_pipe *a, char **e);
+int		child2(t_pipe *a, char **e);
 
 void	cleanup(t_pipe *a, char *p, char **d);
 int		child1(t_pipe *a, char **e);

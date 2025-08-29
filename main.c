@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yitani <yitani@student.42.fr>              +#+  +:+       +#+        */
+/*   By: nfakih <nfakih@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/27 15:54:11 by nfakih            #+#    #+#             */
-/*   Updated: 2025/08/27 22:25:29 by yitani           ###   ########.fr       */
+/*   Updated: 2025/08/27 22:32:21 by nfakih           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,9 @@
 void	execute(t_pipe *a, char **e)
 {
 	int	status[2];
-	int	final_exit;
+	int	last;
 
-	final_exit = 0;
+	last = 0;
 	if (pipe(a->pfd) == -1)
 		return (cleanup(a, NULL, NULL), exit(1));
 	a->pid1 = fork();
@@ -35,10 +35,10 @@ void	execute(t_pipe *a, char **e)
 	waitpid(a->pid1, &status[0], 0);
 	waitpid(a->pid2, &status[1], 0);
 	if (WIFEXITED(status[1]))
-		final_exit = WEXITSTATUS(status[1]);
+		last = WEXITSTATUS(status[1]);
 	else if (WIFSIGNALED(status[1]))
-		final_exit = 128 + WTERMSIG(status[1]);
-	return (cleanup(a, NULL, NULL), exit(final_exit));
+		last = 128 + WTERMSIG(status[1]);
+	return (cleanup(a, NULL, NULL), exit(last));
 }
 
 void	intialize_pipe(t_pipe *a, char **argv, char **e)
@@ -75,7 +75,11 @@ int	main(int argc, char **argv, char **envp)
 
 	if (argc != 5)
 		exit(2);
-	if (!argv[1] || !argv[2] || !argv[3] || !argv[4] || !ft_strncmp(argv[2], "", ft_strlen(argv[2])) || !ft_strncmp(argv[3], "", ft_strlen(argv[3])) || !ft_strncmp(argv[1], "", ft_strlen(argv[1])) || !ft_strncmp(argv[4], "", ft_strlen(argv[4])))
+	if (!argv[1] || !argv[2] || !argv[3] || !argv[4]
+		|| !ft_strncmp(argv[2], "", ft_strlen(argv[2]))
+		|| !ft_strncmp(argv[3], "", ft_strlen(argv[3]))
+		|| !ft_strncmp(argv[1], "", ft_strlen(argv[1]))
+		|| !ft_strncmp(argv[4], "", ft_strlen(argv[4])))
 		exit(1);
 	a = malloc(sizeof(t_pipe));
 	if (!a)

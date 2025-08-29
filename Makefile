@@ -1,6 +1,18 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: nfakih <nfakih@student.42.fr>              +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/08/27 22:32:07 by nfakih            #+#    #+#              #
+#    Updated: 2025/08/27 22:32:47 by nfakih           ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 NAME    = pipex
 
-SRC = ft_split.c ft_strjoin.c libft.c ft_strdup.c main.c help.c
+SRC = ft_split.c ft_strjoin.c libft.c ft_strdup.c main.c help.c help_two.c
 
 OBJ     = $(SRC:.c=.o)
 
